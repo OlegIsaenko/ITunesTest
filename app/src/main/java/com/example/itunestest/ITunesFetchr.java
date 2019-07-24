@@ -26,8 +26,7 @@ import java.util.List;
 
 public class ITunesFetchr {
 
-    private static final String TAG = "hyeg";
-
+    private static final String TAG = "fetchr";
 
     public byte[] getUrlBytes(String urlSpec) throws IOException {
         URL url = new URL(urlSpec);
@@ -71,57 +70,21 @@ public class ITunesFetchr {
                     .build().toString();
             Log.i(TAG, "fetchItems: " + url);
             String jsonString = getUrlString(url);
-//            ----------------------------------------------------------
+
             JsonParser jsonParser = new JsonParser();
             JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
             JsonArray jsonArray = jsonObject.getAsJsonArray("results");
             Gson gson = new Gson();
             Type listType = new TypeToken<List<Album>>() {}.getType();
             albums = gson.fromJson(jsonArray, listType);
-            Log.i(TAG, "parseAlbums: GSON: " + albums.get(2) + " \n" + albums.toString());
-//            ----------------------------------------------------------
-//            parseAlbums(albums, jsonString);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             Log.e(TAG, "fetchItems: ", e);
         }
-//        catch (JSONException je) {
-//            Log.e(TAG, "fetchItems: ", je);
-//        }
         return albums;
     }
 
-//    private void parseAlbums(List<Album> albums, String jsonString)
-//            throws JSONException{
-//
-//        JSONObject jsonBody = new JSONObject(jsonString);
-//        JSONArray albumJsonArray = jsonBody.getJSONArray("results");
-//
-//        for (int i = 0; i < albumJsonArray.length(); i++) {
-//            JSONObject albumJsonObject = albumJsonArray.getJSONObject(i);
-//            Album albumItem = getAlbumFromJson(albumJsonObject);
-//            albums.add(albumItem);
-//        }
-//    }
-
-    private Album getAlbumFromJson(JSONObject albumJsonObject) throws JSONException {
-        Album album = new Album();
-        album.setCollectionId(albumJsonObject.getString("collectionId"));
-        album.setCollectionName(albumJsonObject.getString("collectionName"));
-        album.setArtistName(albumJsonObject.getString("artistName"));
-        album.setCollectionViewUrl(albumJsonObject.getString("collectionViewUrl"));
-        album.setCover(albumJsonObject.getString("artworkUrl60"));
-        album.setCollectionPrice(albumJsonObject.getString("collectionPrice"));
-        album.setTrackCount(albumJsonObject.getString("trackCount"));
-        album.setCopyright(albumJsonObject.getString("copyright"));
-        album.setCountry(albumJsonObject.getString("country"));
-        album.setCurrency(albumJsonObject.getString("currency"));
-        album.setReleaseDate(albumJsonObject.getString("releaseDate"));
-        album.setPrimaryGenreName(albumJsonObject.getString("primaryGenreName"));
-        return album;
-    }
-
     public Album fetchAlbum(String albumId) {
-
         Album album = new Album();
         try {
             String url = Uri.parse("https://itunes.apple.com/lookup")
@@ -129,37 +92,22 @@ public class ITunesFetchr {
                     .appendQueryParameter("id", albumId)
                     .appendQueryParameter("entity", "song")
                     .build().toString();
+
             String jsonString = getUrlString(url);
-            JSONObject jsonBody = new JSONObject(jsonString);
-            album = parseSongs(album, jsonBody);
+            JsonParser jsonParser = new JsonParser();
+            JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
+            JsonArray jsonArray = jsonObject.getAsJsonArray("results");
+
+            album = new Gson().fromJson(jsonArray.get(0), Album.class);
+            jsonArray.remove(0);
+
+            Type listType = new TypeToken<List<Song>>() {}.getType();
+            List<Song> songs = new Gson().fromJson(jsonArray, listType);
+
+            album.setSongs(songs);
+
         } catch (IOException e) {
             Log.e(TAG, "fetchItems: ", e);
-        }
-
-        catch (JSONException je) {
-            Log.e(TAG, "fetchItems: ", je);
-        }
-        Log.i(TAG, "ALBUM FROM SONGS: " + album);
-        return album;
-    }
-
-
-
-    private Album parseSongs(Album album, JSONObject jsonBody)
-            throws  IOException, JSONException {
-
-        JSONArray albumJsonArray = jsonBody.getJSONArray("results");
-        JSONObject jsonAlbum = albumJsonArray.getJSONObject(0);
-        album = getAlbumFromJson(jsonAlbum);
-
-        for (int i = 1; i < albumJsonArray.length(); i++) {
-            JSONObject albumJsonObject = albumJsonArray.getJSONObject(i);
-            Song song = new Song();
-            song.setTrackId(albumJsonObject.getString("trackId"));
-            song.setTrackName(albumJsonObject.getString("trackName"));
-            song.setArtistName(albumJsonObject.getString("artistName"));
-            song.setCollectionName(albumJsonObject.getString("collectionName"));
-            album.getSongs().add(song);
         }
         return album;
     }

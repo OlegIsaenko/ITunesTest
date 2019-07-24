@@ -2,6 +2,7 @@ package com.example.itunestest;
 
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -59,16 +60,21 @@ public class ITunesFetchr {
     }
 
     public List<Album> fetchAlbums(String albumName) {
+
+        if (albumName.equals("")) {
+            return null;
+        }
+
         List<Album> albums = new ArrayList<>();
+        String url = Uri.parse("https://itunes.apple.com/search")
+                .buildUpon()
+                .appendQueryParameter("term", albumName)
+                .appendQueryParameter("media", "music")
+                .appendQueryParameter("entity", "album")
+                .appendQueryParameter("attribute", "albumTerm")
+                .build().toString();
         try {
-            String url = Uri.parse("https://itunes.apple.com/search")
-                    .buildUpon()
-                    .appendQueryParameter("term", albumName)
-                    .appendQueryParameter("media", "music")
-                    .appendQueryParameter("entity", "album")
-                    .appendQueryParameter("attribute", "albumTerm")
-                    .build().toString();
-            Log.i(TAG, "fetchItems: " + url);
+
             String jsonString = getUrlString(url);
 
             JsonParser jsonParser = new JsonParser();
@@ -92,6 +98,8 @@ public class ITunesFetchr {
                     .appendQueryParameter("id", albumId)
                     .appendQueryParameter("entity", "song")
                     .build().toString();
+
+            Log.i(TAG, "fetchAlbum: " + url);
 
             String jsonString = getUrlString(url);
             JsonParser jsonParser = new JsonParser();

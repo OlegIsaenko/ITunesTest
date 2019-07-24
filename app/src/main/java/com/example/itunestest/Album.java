@@ -1,7 +1,7 @@
 package com.example.itunestest;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Album {
@@ -62,27 +62,20 @@ public class Album {
         this.collectionViewUrl = collectionViewUrl;
     }
 
+    public String getArtworkUrl60() {
+        return artworkUrl60;
+    }
+
+    public void setArtworkUrl60(String artworkUrl60) {
+        this.artworkUrl60 = artworkUrl60;
+    }
+
     public String getArtistViewUrl() {
         return artistViewUrl;
     }
 
     public void setArtistViewUrl(String artistViewUrl) {
         this.artistViewUrl = artistViewUrl;
-    }
-
-    public String getCover() {
-        return artworkUrl60;
-    }
-
-    public void setCover(String artworkUrl60) {
-        int size = 250;
-        String changeSize = artworkUrl60.replace("60x60", "" + size + "x" + size);
-        this.artworkUrl60 = changeSize;
-    }
-
-    public void setCover(String artworkUrl60, int size) {
-        String changeSize = artworkUrl60.replace("250x250", "" + size + "x" + size);
-        this.artworkUrl60 = changeSize;
     }
 
     public String getCollectionPrice() {
@@ -148,4 +141,17 @@ public class Album {
     public void setSongs(List<Song> songs) {
         mSongs = songs;
     }
+
+    public static Comparator<Album> ALPHABETICAL_ORDER = new Comparator<Album>() {
+        @Override
+        public int compare(Album o1, Album o2) {
+            String thisName = o1.getCollectionName();
+            String objName = o2.getCollectionName();
+            int res = String.CASE_INSENSITIVE_ORDER.compare(thisName, objName);
+            if (res == 0) {
+                res = thisName.compareTo(objName);
+            }
+            return res;
+        }
+    };
 }

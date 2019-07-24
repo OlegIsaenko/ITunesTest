@@ -62,9 +62,9 @@ public class AlbumFragment extends Fragment {
         @Override
         protected void onPostExecute(Album album) {
             mAlbum = album;
-            mAlbum.setCover(mAlbum.getCover(), 600);
-            Log.i(TAG, "onPostExecute: " + mAlbum.getCover());
-            Picasso.get().load(mAlbum.getCover()).into(mAlbumCover);
+            String cover = mAlbum.getArtworkUrl60()
+                    .replace("60x60", "600x600");
+            Picasso.get().load(cover).into(mAlbumCover);
             setupSongAdapter();
         }
     }

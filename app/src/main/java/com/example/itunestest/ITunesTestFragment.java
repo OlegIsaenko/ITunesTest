@@ -15,16 +15,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
 public class ITunesTestFragment extends Fragment {
 
-    public static final String TAG = "tag";
+    public static final String TAG = "inList";
     private RecyclerView mRecyclerView;
     private List<Album> mAlbumItems = new ArrayList<>();
     private SearchView mSearchView;
@@ -38,7 +40,8 @@ public class ITunesTestFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-//        new FetchItemsTask().execute();
+        albumName = "";
+        new FetchItemsTask().execute();
     }
 
     @Nullable
@@ -51,18 +54,19 @@ public class ITunesTestFragment extends Fragment {
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                Log.i(TAG, "onQueryTextChange: " + s);
-                albumName = s;
-                new FetchItemsTask().execute();
+                    albumName = s;
+                    new FetchItemsTask().execute();
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-
+                    albumName = s;
+                    new FetchItemsTask().execute();
                 return false;
             }
         });
+
         mRecyclerView = view.findViewById(R.id.itunes_test_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         setupAlbumAdapter();
@@ -85,8 +89,11 @@ public class ITunesTestFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<Album> albumItems) {
-            mAlbumItems = albumItems;
-            setupAlbumAdapter();
+            if (albumItems != null) {
+                mAlbumItems = albumItems;
+                Collections.sort(mAlbumItems, Album.ALPHABETICAL_ORDER);
+                setupAlbumAdapter();
+            }
         }
     }
 
@@ -108,9 +115,9 @@ public class ITunesTestFragment extends Fragment {
         public void bindAlbumsItem(Album album) {
             collectionName.setText("Album: " + album.getCollectionName());
             artistName.setText("Artist: " + album.getArtistName());
-            Picasso.get().load(album.getCover())
-                    .resize(250, 250)
-                    .into(artworkUrl60);
+            String cover = album.getArtworkUrl60()
+                    .replace("60x60", "250x250");
+            Picasso.get().load(cover).into(artworkUrl60);
             albumId.setText(album.getCollectionId());
         }
 

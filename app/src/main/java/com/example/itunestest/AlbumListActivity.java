@@ -42,7 +42,7 @@ public class AlbumListActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_list);
-        mToolbar = findViewById(R.id.toolbar);
+        mToolbar = findViewById(R.id.list_toolbar);
         setSupportActionBar(mToolbar);
         mRecyclerView = findViewById(R.id.itunes_test_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -56,9 +56,7 @@ public class AlbumListActivity extends AppCompatActivity {
         mMenuSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                albumName = s;
-                new FetchItemsTask().execute();
-                Log.i(TAG, "onQueryTextSubmit: " + s);
+
                 return false;
             }
 
@@ -66,12 +64,9 @@ public class AlbumListActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String s) {
                 albumName = s;
                 new FetchItemsTask().execute();
-                Log.i(TAG, "onQueryTextSubmit: " + s);
                 return false;
             }
         });
-        mMenuSearchView.setIconified(false);
-        mMenuSearchView.setQueryHint("poisk");
         return true;
     }
 
@@ -145,13 +140,14 @@ public class AlbumListActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     String album_id = mAlbumItems.get(adapterPosition).getCollectionId();
-                    Log.i(TAG, "onClick: " + adapterPosition);
                     Intent intent = new Intent(AlbumListActivity.this, AlbumActivity.class);
                     intent.putExtra(AlbumFragment.ALBUM_ID, album_id);
                     startActivity(intent);
                 }
             });
         }
+
+
 
         @Override
         public int getItemCount() {
@@ -160,13 +156,6 @@ public class AlbumListActivity extends AppCompatActivity {
     }
 
     private void setupAlbumAdapter() {
-        mToolbar.setTitle(R.string.app_title);
         mRecyclerView.setAdapter(new AlbumAdapter(mAlbumItems));
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        setupAlbumAdapter();
     }
 }

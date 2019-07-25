@@ -12,13 +12,11 @@ public class AlbumActivity extends AppCompatActivity {
 
     public static final String TAG = "tag";
     private String albumId;
-//    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
-//        mToolbar = findViewById(R.id.toolbar);
 
         albumId = getIntent().getStringExtra(AlbumFragment.ALBUM_ID);
 

@@ -47,14 +47,9 @@ public class AlbumFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_album, container, false);
         mAlbumCover = getActivity().findViewById(R.id.new_cover_view);
-        mToolbar = getActivity().findViewById(R.id.toolbar);
+        mToolbar = getActivity().findViewById(R.id.album_toolbar);
         mAlbumRecyclerView = view.findViewById(R.id.album_songs_recycler_view);
-        mAlbumRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()) {
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        });
+        mAlbumRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         new FetchSongsTask().execute();
         return view;
     }

@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#000911</color>
+    <color name="colorPrimaryDark">#000705</color>
+    <color name="colorAccent">#B90041</color>
+    <color name="toolbar_color">#000000</color>
+    <color name="text">#FFFFFF</color>
+
+    <color name="translucent_scrim_top">#51000000</color>
+    <color name="translucent_scrim_top_center">#37000000</color>
+    <color name="translucent_scrim_bottom">#C4000000</color>
+    <color name="translucent_scrim_bottom_center">#7E000000</color>
 </resources>

@@ -5,17 +5,19 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -24,60 +26,53 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class ITunesTestFragment extends Fragment {
+public class AlbumListActivity extends AppCompatActivity {
 
     public static final String TAG = "inList";
+    public static final String ADAPTER_POSITION = "position";
     private RecyclerView mRecyclerView;
     private List<Album> mAlbumItems = new ArrayList<>();
-    private SearchView mSearchView;
     private String albumName;
 
-    public static ITunesTestFragment newInstance() {
-        return new ITunesTestFragment();
-    }
+    private MenuItem searchMenuItem;
+    private SearchView mMenuSearchView;
+    private Toolbar mToolbar;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        albumName = "";
-        new FetchItemsTask().execute();
+        setContentView(R.layout.activity_album_list);
+        mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        mRecyclerView = findViewById(R.id.itunes_test_recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_itunes_test, container, false);
-
-        mSearchView = view.findViewById(R.id.search_test);
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        searchMenuItem = menu.findItem(R.id.action_search);
+        mMenuSearchView = (SearchView) searchMenuItem.getActionView();
+        mMenuSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                    albumName = s;
-                    new FetchItemsTask().execute();
+                albumName = s;
+                new FetchItemsTask().execute();
+                Log.i(TAG, "onQueryTextSubmit: " + s);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                    albumName = s;
-                    new FetchItemsTask().execute();
+                albumName = s;
+                new FetchItemsTask().execute();
+                Log.i(TAG, "onQueryTextSubmit: " + s);
                 return false;
             }
         });
-
-        mRecyclerView = view.findViewById(R.id.itunes_test_recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        setupAlbumAdapter();
-
-        return view;
-    }
-
-    private void setupAlbumAdapter() {
-        if (isAdded()) {
-            mRecyclerView.setAdapter(new AlbumAdapter(mAlbumItems));
-        }
+        mMenuSearchView.setIconified(false);
+        mMenuSearchView.setQueryHint("poisk");
+        return true;
     }
 
     private class FetchItemsTask extends AsyncTask<Void, Void, List<Album>> {
@@ -97,7 +92,7 @@ public class ITunesTestFragment extends Fragment {
         }
     }
 
-    private class AlbumHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class AlbumHolder extends RecyclerView.ViewHolder {
         private ImageView artworkUrl60;
         private TextView collectionName;
         private TextView artistName;
@@ -105,7 +100,6 @@ public class ITunesTestFragment extends Fragment {
 
         public AlbumHolder(View albumView) {
             super(albumView);
-            albumView.setOnClickListener(this);
             artworkUrl60 = albumView.findViewById(R.id.list_albums_cover);
             collectionName = albumView.findViewById(R.id.album_name);
             artistName = albumView.findViewById(R.id.artist_name);
@@ -114,22 +108,11 @@ public class ITunesTestFragment extends Fragment {
 
         public void bindAlbumsItem(Album album) {
             collectionName.setText("Album: " + album.getCollectionName());
-            artistName.setText("Artist: " + album.getArtistName());
+            artistName.setText("Artist: " + album.getArtistName() + "\n" + album.getTrackCount());
             String cover = album.getArtworkUrl60()
                     .replace("60x60", "250x250");
             Picasso.get().load(cover).into(artworkUrl60);
             albumId.setText(album.getCollectionId());
-        }
-
-        @Override
-        public void onClick(View v) {
-            TextView textView = v.findViewById(R.id.album_id);
-            String album_id = textView.getText().toString();
-            Log.i(TAG, "onClick: ");
-            Intent intent = new Intent(getActivity(), AlbumActivity.class);
-            intent.putExtra(AlbumFragment.ALBUM_ID, album_id);
-            startActivity(intent);
-
         }
     }
 
@@ -144,7 +127,7 @@ public class ITunesTestFragment extends Fragment {
         @NonNull
         @Override
         public AlbumHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            LayoutInflater inflater = LayoutInflater.from(AlbumListActivity.this);
             View view = inflater.inflate(R.layout.album_holder, viewGroup, false);
             return new AlbumHolder(view);
         }
@@ -156,10 +139,34 @@ public class ITunesTestFragment extends Fragment {
         }
 
         @Override
+        public void onViewAttachedToWindow(@NonNull AlbumHolder holder) {
+            final int adapterPosition = holder.getAdapterPosition();
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String album_id = mAlbumItems.get(adapterPosition).getCollectionId();
+                    Log.i(TAG, "onClick: " + adapterPosition);
+                    Intent intent = new Intent(AlbumListActivity.this, AlbumActivity.class);
+                    intent.putExtra(AlbumFragment.ALBUM_ID, album_id);
+                    startActivity(intent);
+                }
+            });
+        }
+
+        @Override
         public int getItemCount() {
             return mAlbumItems.size();
         }
     }
 
+    private void setupAlbumAdapter() {
+        mToolbar.setTitle(R.string.app_title);
+        mRecyclerView.setAdapter(new AlbumAdapter(mAlbumItems));
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        setupAlbumAdapter();
+    }
 }

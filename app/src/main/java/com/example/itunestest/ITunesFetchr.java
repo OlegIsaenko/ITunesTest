@@ -72,6 +72,7 @@ public class ITunesFetchr {
                 .appendQueryParameter("media", "music")
                 .appendQueryParameter("entity", "album")
                 .appendQueryParameter("attribute", "albumTerm")
+                .appendQueryParameter("limit", "100")
                 .build().toString();
         try {
 

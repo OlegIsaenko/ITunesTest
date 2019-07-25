@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +21,11 @@ public class AlbumFragment extends Fragment {
 
     public static final String ALBUM_ID = "album_id";
     private static final String TAG = "tag";
-    private ImageView mAlbumCover;
     private RecyclerView mAlbumRecyclerView;
     private Album mAlbum;
     private String albumId;
+    private ImageView mAlbumCover;
+    private Toolbar mToolbar;
 
     public static AlbumFragment newInstance(String albumId) {
         Bundle args = new Bundle();
@@ -44,9 +46,15 @@ public class AlbumFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_album, container, false);
+        mAlbumCover = getActivity().findViewById(R.id.new_cover_view);
+        mToolbar = getActivity().findViewById(R.id.toolbar);
         mAlbumRecyclerView = view.findViewById(R.id.album_songs_recycler_view);
-        mAlbumRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAlbumCover = view.findViewById(R.id.album_cover);
+        mAlbumRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        });
         new FetchSongsTask().execute();
         return view;
     }
@@ -62,9 +70,6 @@ public class AlbumFragment extends Fragment {
         @Override
         protected void onPostExecute(Album album) {
             mAlbum = album;
-            String cover = mAlbum.getArtworkUrl60()
-                    .replace("60x60", "600x600");
-            Picasso.get().load(cover).into(mAlbumCover);
             setupSongAdapter();
         }
     }
@@ -73,17 +78,14 @@ public class AlbumFragment extends Fragment {
     private class SongHolder extends RecyclerView.ViewHolder {
 
         private TextView songName;
-        private TextView artistName;
 
         public SongHolder(View albumView) {
             super(albumView);
             songName = albumView.findViewById(R.id.song_name);
-            artistName = albumView.findViewById(R.id.song_artist);
         }
 
         public void bindSongs(Song song) {
             songName.setText(song.getTrackName());
-            artistName.setText(song.getArtistName());
         }
     }
 
@@ -115,6 +117,10 @@ public class AlbumFragment extends Fragment {
 
     private void setupSongAdapter() {
         if (isAdded()) {
+            mToolbar.setTitle(mAlbum.getCollectionName());
+            String cover = mAlbum.getArtworkUrl60()
+                    .replace("60x60", "600x600");
+            Picasso.get().load(cover).into(mAlbumCover);
             mAlbumRecyclerView.setAdapter(new SongAdapter(mAlbum));
         }
     }

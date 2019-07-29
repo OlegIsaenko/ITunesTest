@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class Song {
+class Song {
 
     private String trackId;
     private String trackName;
@@ -68,7 +68,7 @@ public class Song {
         this.trackNumber = trackNumber;
     }
 
-    public String getTrackTimeMillis() {
+    private String getTrackTimeMillis() {
         return trackTimeMillis;
     }
 

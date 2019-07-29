@@ -24,12 +24,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ITunesFetchr {
+class ITunesFetchr {
 
     private static final String TAG = "fetchr";
     private static boolean isToast;
 
-    public byte[] getUrlBytes(String urlSpec) throws IOException {
+
+    /*
+        метод создает соединение используя URL, передаваемый в качестве параметра.
+     */
+    private byte[] getUrlBytes(String urlSpec) throws IOException {
         URL url = new URL(urlSpec);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         try {
@@ -42,7 +46,7 @@ public class ITunesFetchr {
                         urlSpec);
             }
 
-            int bytesRead = 0;
+            int bytesRead;
             byte[] buffer = new byte[1024];
             while ((bytesRead = in.read(buffer)) > 0) {
                 out.write(buffer, 0, bytesRead);
@@ -55,12 +59,16 @@ public class ITunesFetchr {
         }
     }
 
-    public String getUrlString(String urlSpec) throws IOException {
+
+    private String getUrlString(String urlSpec) throws IOException {
         return new String(getUrlBytes(urlSpec));
     }
 
 
-
+    /*
+        метод делает запрос по названию альбома,
+        создает и заполняет список объектов album из json ответа.
+     */
     public List<Album> fetchAlbums(String albumName) {
 
         if (albumName.equals("")) {
@@ -93,6 +101,11 @@ public class ITunesFetchr {
         return albums;
     }
 
+    /*
+        метод делает запрос по ID альбома, из json ответа создает объект album
+        и заполняет список объектов song. объектом json ответа с индексом [0] идет сам альбом,
+        далее с индекса [1] - сами треки.
+     */
     public Album fetchAlbum(String albumId) {
         Album album = new Album();
         try {
@@ -123,6 +136,7 @@ public class ITunesFetchr {
         return album;
     }
 
+    //метод проверяет состояние интернет соединения.
     public static boolean isOnline(Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -137,6 +151,11 @@ public class ITunesFetchr {
         return false;
     }
 
+    /*
+        метод устанавливает задержку между отображением toast.
+        нужен из-за того, что поле поиска реагирует на каждое изменение текста,
+        и при отсутствии соединения помещает слишком много toast в очередь.
+     */
     private static void lostConnectionToast(Context context) {
         if(!isToast) {
             Toast toast = Toast.makeText(context,

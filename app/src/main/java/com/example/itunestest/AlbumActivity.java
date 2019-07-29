@@ -57,6 +57,11 @@ public class AlbumActivity extends AppCompatActivity {
 
         mToolbar = findViewById(R.id.album_toolbar);
 
+        /*
+            Детальная информация об альбоме. Видимость поверх обложки альбома
+            меняется при нажатии иконки "i" в меню (R.id.album_info).
+            метод onClick передает в браузер ссылку на альбом с https://music.apple.com
+         */
         mAlbumInfo = findViewById(R.id.information_layout);
         mAlbumInfo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +89,9 @@ public class AlbumActivity extends AppCompatActivity {
         return true;
     }
 
+    /*
+        Управляет видимостью макета с информацией об альбоме (R.id.information_layout)
+    */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -103,6 +111,8 @@ public class AlbumActivity extends AppCompatActivity {
         return false;
     }
 
+    //класс создает фоновый поток, в котором делает запрос по параметру albumId.
+    //по окончанию выполнения обновляет макеты альбома.
     private class FetchSongsTask extends AsyncTask<Void, Void, Album> {
 
         @Override
@@ -117,6 +127,14 @@ public class AlbumActivity extends AppCompatActivity {
         }
     }
 
+    /*
+        Метод заполняет часть макета информацией об альбоме:
+        - название альбома устанавливается в toolbar;
+        - подготавливается строка запроса для обложки альбома
+            (по умолчанию itunes отдает ссылки на обложки с размерами 60х60 и 100х100,
+             хотя хранит их и в более высоком разрешении. Меняем в строке на нужный размер.)
+        - с помощью Picasso загружается и устанавливается обложка в макет.
+     */
     private void updateUI() {
         if (mAlbum == null) {
             Toast.makeText(this, R.string.lost_connection, Toast.LENGTH_SHORT).show();
@@ -125,21 +143,27 @@ public class AlbumActivity extends AppCompatActivity {
 
         mToolbar.setTitle(mAlbum.getCollectionName());
         setSupportActionBar(mToolbar);
-
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
         String cover = mAlbum.getArtworkUrl60()
                 .replace("60x60", "600x600");
         Picasso.get().load(cover).into(mAlbumCover);
-        mAlbumRecyclerView.setAdapter(new SongAdapter(mAlbum));
         updateAlbumDescription();
+        mAlbumRecyclerView.setAdapter(new SongAdapter(mAlbum));
     }
 
+    /*
+        метод заполняет макет с детальной информацией об альбоме
+     */
     private void updateAlbumDescription() {
         albumName.setText(mAlbum.getCollectionName());
         artistName.setText(mAlbum.getArtistName());
+
+        /*
+            в зависимости от количества треков подбираем окончание
+            "track(-s)" или "трек(-а/-ов)".
+         */
         String count = getResources().getString(R.string.songs);
         int i = Integer.parseInt(mAlbum.getTrackCount());
         if (i == 1) {
@@ -148,6 +172,7 @@ public class AlbumActivity extends AppCompatActivity {
             count = getResources().getString(R.string.song4);
         }
 
+        //преобразуем строку с датой в объект Date, затем обратно в строку с форматированием.
         String dateStr = mAlbum.getReleaseDate();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         try {
@@ -157,14 +182,13 @@ public class AlbumActivity extends AppCompatActivity {
             Log.e(TAG, "updateAlbumDescription: ", e);
         }
 
+        //заполняем макет обработанной информацией.
         String description = mAlbum.getPrimaryGenreName() + ", " + mAlbum.getCountry() + "\n" +
                         mAlbum.getTrackCount() + " " + count + "\n" +
                         mAlbum.getCollectionPrice() + " " + mAlbum.getCurrency() + "\n" +
                         getResources().getString(R.string.released_date) + " " +
                         dateStr + "\n\n" + mAlbum.getCopyright();
         albumDescription.setText(description);
-
-        Log.i(TAG, "updateAlbumDescription: " + mAlbum.toString());
     }
 
     private class SongHolder extends RecyclerView.ViewHolder {
@@ -173,14 +197,14 @@ public class AlbumActivity extends AppCompatActivity {
         private TextView songNumber;
         private TextView songLength;
 
-        public SongHolder(View albumView) {
+        SongHolder(View albumView) {
             super(albumView);
             songName = albumView.findViewById(R.id.song_name);
             songNumber = albumView.findViewById(R.id.song_number);
             songLength = albumView.findViewById(R.id.song_length);
         }
 
-        public void bindSongs(Song song) {
+        void bindSongs(Song song) {
             songName.setText(song.getTrackName());
             songLength.setText(song.getSongLength());
             songNumber.setText(song.getTrackNumber());
@@ -189,7 +213,7 @@ public class AlbumActivity extends AppCompatActivity {
 
     private class SongAdapter extends RecyclerView.Adapter<SongHolder> {
 
-        public SongAdapter(Album album) {
+        SongAdapter(Album album) {
             mAlbum = album;
         }
 

@@ -17,9 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +37,10 @@ public class AlbumListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_album_list);
         Toolbar toolbar = findViewById(R.id.list_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
 
         mRecyclerView = findViewById(R.id.itunes_test_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -48,6 +49,13 @@ public class AlbumListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search_menu, menu);
+
+        /*
+            настраиваем виджет SearchView.
+            переопределяем методы textSubmit и textChange:
+            если есть интернет соединение, при каждом изменении текста в поле поиска
+            запускается фоновый процесс FetchItemTask.
+         */
         MenuItem searchMenuItem = menu.findItem(R.id.action_search);
         SearchView menuSearchView = (SearchView) searchMenuItem.getActionView();
         menuSearchView.setIconifiedByDefault(false);
@@ -100,14 +108,14 @@ public class AlbumListActivity extends AppCompatActivity {
         private TextView artistName;
 
 
-        public AlbumHolder(View albumView) {
+        AlbumHolder(View albumView) {
             super(albumView);
             artworkUrl60 = albumView.findViewById(R.id.list_albums_cover);
             collectionName = albumView.findViewById(R.id.album_name);
             artistName = albumView.findViewById(R.id.artist_name);
         }
 
-        public void bindAlbumsItem(Album album) {
+        void bindAlbumsItem(Album album) {
             collectionName.setText(album.getCollectionName());
             artistName.setText(album.getArtistName());
             String cover = album.getArtworkUrl60()
@@ -120,7 +128,7 @@ public class AlbumListActivity extends AppCompatActivity {
 
         private List<Album> mAlbumItems;
 
-        public AlbumAdapter(List<Album> albumItems) {
+        AlbumAdapter(List<Album> albumItems) {
             mAlbumItems = albumItems;
         }
 

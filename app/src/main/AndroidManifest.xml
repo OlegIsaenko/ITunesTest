@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.itunestest">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -14,7 +15,8 @@
         android:theme="@style/AppTheme"
         >
 
-        <activity android:name=".AlbumActivity" />
+        <activity android:name=".AlbumActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
 
         <activity android:name=".AlbumListActivity"
             android:configChanges="keyboardHidden|orientation|screenSize">

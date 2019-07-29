@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,21 +28,19 @@ import java.util.List;
 public class AlbumListActivity extends AppCompatActivity {
 
     public static final String TAG = "inList";
-    public static final String ADAPTER_POSITION = "position";
     private RecyclerView mRecyclerView;
     private List<Album> mAlbumItems = new ArrayList<>();
     private String albumName;
 
-    private MenuItem searchMenuItem;
-    private SearchView mMenuSearchView;
-    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_list);
-        mToolbar = findViewById(R.id.list_toolbar);
-        setSupportActionBar(mToolbar);
+        Toolbar toolbar = findViewById(R.id.list_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         mRecyclerView = findViewById(R.id.itunes_test_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -51,19 +48,26 @@ public class AlbumListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search_menu, menu);
-        searchMenuItem = menu.findItem(R.id.action_search);
-        mMenuSearchView = (SearchView) searchMenuItem.getActionView();
-        mMenuSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+        SearchView menuSearchView = (SearchView) searchMenuItem.getActionView();
+        menuSearchView.setIconifiedByDefault(false);
+        menuSearchView.setMaxWidth(Integer.MAX_VALUE);
+        menuSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-
+                albumName = s;
+                if (ITunesFetchr.isOnline(getApplicationContext())) {
+                    new FetchItemsTask().execute();
+                }
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
                 albumName = s;
-                new FetchItemsTask().execute();
+                if (ITunesFetchr.isOnline(getApplicationContext())) {
+                    new FetchItemsTask().execute();
+                }
                 return false;
             }
         });
@@ -74,7 +78,10 @@ public class AlbumListActivity extends AppCompatActivity {
 
         @Override
         protected List<Album> doInBackground(Void... voids) {
-            return new ITunesFetchr().fetchAlbums(albumName);
+            if (ITunesFetchr.isOnline(getApplicationContext())) {
+                return new ITunesFetchr().fetchAlbums(albumName);
+            }
+            return null;
         }
 
         @Override
@@ -91,23 +98,21 @@ public class AlbumListActivity extends AppCompatActivity {
         private ImageView artworkUrl60;
         private TextView collectionName;
         private TextView artistName;
-        private TextView albumId;
+
 
         public AlbumHolder(View albumView) {
             super(albumView);
             artworkUrl60 = albumView.findViewById(R.id.list_albums_cover);
             collectionName = albumView.findViewById(R.id.album_name);
             artistName = albumView.findViewById(R.id.artist_name);
-            albumId = albumView.findViewById(R.id.album_id);
         }
 
         public void bindAlbumsItem(Album album) {
-            collectionName.setText("Album: " + album.getCollectionName());
-            artistName.setText("Artist: " + album.getArtistName() + "\n" + album.getTrackCount());
+            collectionName.setText(album.getCollectionName());
+            artistName.setText(album.getArtistName());
             String cover = album.getArtworkUrl60()
                     .replace("60x60", "250x250");
             Picasso.get().load(cover).into(artworkUrl60);
-            albumId.setText(album.getCollectionId());
         }
     }
 
@@ -139,15 +144,16 @@ public class AlbumListActivity extends AppCompatActivity {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String album_id = mAlbumItems.get(adapterPosition).getCollectionId();
-                    Intent intent = new Intent(AlbumListActivity.this, AlbumActivity.class);
-                    intent.putExtra(AlbumFragment.ALBUM_ID, album_id);
-                    startActivity(intent);
+
+                    if (ITunesFetchr.isOnline(getApplicationContext())) {
+                        String album_id = mAlbumItems.get(adapterPosition).getCollectionId();
+                        Intent intent = new Intent(AlbumListActivity.this, AlbumActivity.class);
+                        intent.putExtra(AlbumActivity.ALBUM_ID, album_id);
+                        startActivity(intent);
+                    }
                 }
             });
         }
-
-
 
         @Override
         public int getItemCount() {
@@ -158,4 +164,5 @@ public class AlbumListActivity extends AppCompatActivity {
     private void setupAlbumAdapter() {
         mRecyclerView.setAdapter(new AlbumAdapter(mAlbumItems));
     }
+
 }

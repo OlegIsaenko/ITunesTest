@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">ITunesLibrary</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="search_hint">Введите название альбома</string>
+    <string name="album_name">Album title</string>
+    <string name="app_title">Music Library</string>
+    <string name="album_info">Album info</string>
+    <string name="songs">треков</string>
+    <string name="song">трек</string>
+    <string name="song4">трека</string>
+    <string name="released_date">Релиз: </string>
+    <string name="lost_connection">Ошибка соединения с iTunes</string>
+
+</resources>

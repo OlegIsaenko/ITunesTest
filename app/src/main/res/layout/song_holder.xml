@@ -1,13 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:padding="15dp"
+    android:background="@drawable/border">
 
-    <TextView android:id="@+id/song_name"
+    <TextView
+        android:id="@+id/song_number"
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/song_name"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints"
+        />
+
+    <TextView
+        android:id="@+id/song_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:gravity="start"
+        android:maxLines="2"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toStartOf="@+id/song_length"
+        app:layout_constraintStart_toEndOf="@+id/song_number"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/song_length"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-</LinearLayout>
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/song_name"
+        tools:ignore="MissingConstraints"
+        android:textStyle="italic"/>
+</android.support.constraint.ConstraintLayout>

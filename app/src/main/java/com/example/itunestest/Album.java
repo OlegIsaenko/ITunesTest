@@ -24,9 +24,17 @@ public class Album {
     @Override
     public String toString() {
         return  collectionName + "\n" +
+                collectionId + "\n" +
                 artistName + "\n" +
+                collectionPrice + "\n" +
+                trackCount + "\n" +
+                copyright + "\n" +
+                country + "\n" +
+                currency + "\n" +
+                releaseDate + "\n" +
                 collectionViewUrl + "\n" +
-                mSongs.size()
+                artistViewUrl + "\n" +
+                primaryGenreName
                 ;
     }
 

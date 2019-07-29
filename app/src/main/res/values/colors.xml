@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#80000911</color>
+    <color name="colorPrimary">#000911</color>
     <color name="colorPrimaryDark">#000705</color>
     <color name="colorAccent">#FDFDFD</color>
     <color name="text">#FFFFFF</color>
@@ -9,4 +9,5 @@
     <color name="translucent_scrim_top_center">#2F000000</color>
     <color name="translucent_scrim_bottom">#000000</color>
     <color name="translucent_scrim_bottom_center">#7E000000</color>
+    <color name="translucent_info_layout">#DA000000</color>
 </resources>

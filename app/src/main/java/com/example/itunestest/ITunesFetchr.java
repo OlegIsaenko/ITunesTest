@@ -1,20 +1,19 @@
 package com.example.itunestest;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,6 +27,7 @@ import java.util.List;
 public class ITunesFetchr {
 
     private static final String TAG = "fetchr";
+    private static boolean isToast;
 
     public byte[] getUrlBytes(String urlSpec) throws IOException {
         URL url = new URL(urlSpec);
@@ -58,6 +58,8 @@ public class ITunesFetchr {
     public String getUrlString(String urlSpec) throws IOException {
         return new String(getUrlBytes(urlSpec));
     }
+
+
 
     public List<Album> fetchAlbums(String albumName) {
 
@@ -119,5 +121,35 @@ public class ITunesFetchr {
             Log.e(TAG, "fetchItems: ", e);
         }
         return album;
+    }
+
+    public static boolean isOnline(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting())
+        {
+            Log.i(TAG, "isOnline: connection OK");
+            return true;
+        }
+        Log.i(TAG, "isOnline: connection FAILED");
+        lostConnectionToast(context);
+        return false;
+    }
+
+    private static void lostConnectionToast(Context context) {
+        if(!isToast) {
+            Toast toast = Toast.makeText(context,
+                    R.string.lost_connection, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+            isToast = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    isToast = false;
+                }
+            }, 2000);
+        }
     }
 }

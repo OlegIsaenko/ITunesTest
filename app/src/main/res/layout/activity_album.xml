@@ -26,8 +26,44 @@
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_launcher_background"
                 app:layout_collapseMode="parallax" />
+
+            <LinearLayout android:id="@+id/information_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:padding="30dp"
+                android:background="@color/translucent_info_layout"
+                android:visibility="gone">
+
+                <TextView android:id="@+id/album_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    />
+
+                <TextView android:id="@+id/artist_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="17sp"
+                    android:textColor="@android:color/holo_blue_dark"
+                    />
+
+                <TextView android:id="@+id/album_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="italic"
+                    android:textSize="15sp"
+                    android:padding="12dp"
+                    />
+
+            </LinearLayout>
+
+
 
             <View
                 android:layout_width="match_parent"
@@ -42,15 +78,12 @@
                 android:layout_gravity="bottom"
                 android:background="@drawable/scrim_bottom" />
 
-            <!--<include layout="@layout/toolbar" />-->
-
             <android.support.v7.widget.Toolbar
                 android:id="@+id/album_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?android:actionBarSize"
                 app:titleTextColor="@color/text"
                 app:layout_collapseMode="pin"
-
                 >
             </android.support.v7.widget.Toolbar>
 
@@ -64,12 +97,14 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
-        <FrameLayout
-            android:id="@+id/album_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
-        </FrameLayout>
+    <android.support.v7.widget.RecyclerView
+
+        android:id="@+id/album_songs_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+    </android.support.v7.widget.RecyclerView>
 
 
 </android.support.v4.widget.NestedScrollView>

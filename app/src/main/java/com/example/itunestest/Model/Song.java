@@ -1,12 +1,8 @@
-package com.example.itunestest;
+package com.example.itunestest.Model;
 
-import android.util.Log;
+import android.text.format.DateUtils;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-
-class Song {
+public class Song {
 
     private String trackId;
     private String trackName;
@@ -110,18 +106,7 @@ class Song {
 
     public String getSongLength() {
         long ms = Long.parseLong(getTrackTimeMillis());
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(ms);
-        String str;
-        int hours = calendar.get(Calendar.HOUR);
-        if (hours == 0) {
-            str = new SimpleDateFormat("m:ss", Locale.getDefault()).format(calendar.getTime());
-            return str;
-        }
-        str = new SimpleDateFormat("H:mm:ss", Locale.getDefault()).format(calendar.getTime());
-
-        Log.i("fetchr", "getTime: " + str);
-
-        return str;
+        String durationText = DateUtils.formatElapsedTime(ms / 1000);
+        return durationText;
     }
 }

@@ -6,9 +6,18 @@
     <string name="album_name">Album: </string>
     <string name="app_title">Music Library</string>
     <string name="album_info">Album info</string>
-    <string name="songs">tracks</string>
-    <string name="song">track</string>
-    <string name="song4">tracks</string>
+    <string name="songs" translatable="false">tracks</string>
+    <string name="song" translatable="false">track</string>
+    <string name="song4" translatable="false">tracks</string>
     <string name="released_date">Released:</string>
     <string name="lost_connection">iTunes connection error</string>
+
+    <plurals name="plurals_1">
+        <item quantity="zero">no tracks</item>
+        <item quantity="one">%1$d track</item>
+        <item quantity="two">%1$d tracks</item>
+        <item quantity="few">%1$d tracks</item>
+        <item quantity="many">%1$d tracks</item>
+        <item quantity="other">%1$d tracks</item>
+    </plurals>
 </resources>

@@ -15,10 +15,10 @@
         android:theme="@style/AppTheme"
         >
 
-        <activity android:name=".AlbumActivity"
+        <activity android:name=".Album.AlbumView"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
 
-        <activity android:name=".AlbumListActivity"
+        <activity android:name=".AlbumList.AlbumListView"
             android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
